@@ -1,11 +1,17 @@
 set :application, "openlibrary"
-set :repository, "git://github.com/TWChennai/openlibrary.git"
+set :repository, "git://github.com/siliconsenthil/openlibrary.git"
 set :user, "root"
-
 set :scm, :git
-role :web, "10.10.4.50" # Your HTTP server, Apache/etc
-role :app, "10.10.4.50" # This may be the same as your `Web` server
-role :db, "10.10.4.50", :primary => true # This is where Rails migrations will run
+
+begin
+  server_ip = {chennai: "10.10.4.50", pune: "10.10.5.121"}.find{|o, ip| o.to_s.downcase == office.downcase}.last
+  role :web, server_ip # Your HTTP server, Apache/etc
+  role :app, server_ip# This may be the same as your `Web` server
+  role :db, server_ip, :primary => true # This is where Rails migrations will run
+rescue NameError
+  puts "Usage: cap -S office=<Chennai|Pune> <task>"
+  exit
+end
 
 default_run_options[:pty] = true
 
@@ -21,7 +27,7 @@ namespace :deploy do
     run "cd #{current_path} && passenger start -p80 -d"
   end
   task :stop, :roles => :app, :except => { :no_release => true } do
-    run "cd #{current_path} && passenger stop --pid-file tmp/pids/passenger.pid"
+    run "cd #{current_path} && passenger stop --pid-file tmp/pids/passenger.80.pid"
   end
   task :restart, :roles => :app, :except => { :no_release => true } do
     run "#{try_sudo} touch #{File.join(current_path, 'tmp', 'restart.txt')}"

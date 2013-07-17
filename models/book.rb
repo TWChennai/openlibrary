@@ -9,11 +9,11 @@ class Book
   has n, :book_copies
   has n, :reservation
 
-  def self.create_from_google_api(isbn)
+  def self.create_from_google_api(isbn, copies=1)
     params = details_from_google(isbn) || {:isbn => isbn, :title => 'N/A', :author => 'N/A'}
-    Book.new(params).tap do |b|
-      b.book_copies << BookCopy.new
-    end if params
+    Book.create(params).tap do |b|
+      copies.times{ b.book_copies << BookCopy.create(book_id: b.id) }
+    end
   end
 
   def self.details_from_google(isbn)
@@ -23,7 +23,7 @@ class Book
     {}.tap do |p|
       p[:isbn] = isbn
       p[:title] = response["title"]
-      p[:author] = response["authors"].join(", ")
+      p[:author] = response["authors"] ? response["authors"].join(", ") : 'N/A'
       p[:photo_remote_url] = response["imageLinks"]["thumbnail"] if response["imageLinks"]
     end
   end

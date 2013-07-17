@@ -1,6 +1,15 @@
 home:
   path: "/"
   display_name: "Home"
-new_user:
-  path: "/user/new"
-  display_name: "New User"
+all_users:
+  path: "/users"
+  display_name: "Users"
+new_book:
+  path: "/donate"
+  display_name: "Add/Edit Book"
+issued_books:
+  path: "/issued-books"
+  display_name: "Issued Books"
+all_books:
+  path: "/books"
+  display_name: "All Books"

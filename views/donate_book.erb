@@ -1,0 +1,47 @@
+<div class="book-info">
+  <img src="<%= @book.photo_remote_url %>" />
+  <h2>You are holding the following book:</h2>
+  <h3 class="title"><%= @book.title %></h3>
+  <h3 class="author"><%= @book.author %></h3>
+  <h3 class="author"><%= @book.author %></h3>
+  <h3>
+    <% if @book_found %>
+      This book has <%= @book.book_copies.size %> copies.
+    <% else %>
+      A copy of this book has been added.
+    <% end %>
+  </h3>
+  <input type="hidden" name="isbn" value="<%= @book.isbn %>"/>
+  <h3>I have <input type="number" value="1"> more copies.<input type="button" value="Add" class="btn"/></h3>
+  <h3> Or <a href="#" id="update_book">Edit</a></h3>
+  <h3> Or <a href="/donate">Add another book</a></h3>
+
+  <div id="update_book_form" class="modal hide fade" role="dialog">
+     <div class="modal-header">
+       <a class="close" data-dismiss="modal">&times;</a>
+
+       <h3>Update book details</h3>
+     </div>
+
+     <form action="/books/<%= @book.isbn %>" method="POST" class="form-inline">
+       <div class="modal-body">
+         <p>Title: <input type="text" name="book[title]" placeholder="Title" class="input-long" value="<%= @book.title %>"></p>
+         <p>Author: <input type="text" name="book[author]" placeholder="Author" class="input-long" value="<%= @book.author %>"></p>
+         <p>Book photo image url: <input type="text" name="book[photo_remote_url]" placeholder="Image URL" class="input-long" value="<%= @book.photo_remote_url %>"></p>
+       </div>
+       <div class="modal-footer">
+         <input type="submit" value="Update" class="btn btn-primary">
+         <button class="btn" data-dismiss="modal">Close</button>
+       </div>
+     </form>
+  </div>
+  <script type="text/javascript">
+      $("#update_book").click(function() {
+          $('#update_book_form').modal({
+              show:true,
+              backdrop:'static'
+          });
+      });
+  </script>
+</div>
+

@@ -1,0 +1,67 @@
+<% content_for :javascript do %>
+  <link rel="stylesheet" href="/css/tablesorter/theme.bootstrap.css">
+  <script src="/js/jquery.tablesorter.min.js"></script>
+  <script src="/js/jquery.tablesorter.widgets.min.js"></script>
+  <script src="/js/sortable_table.js"></script>
+<% end %>
+<% content_for :content do %>
+  <p><h3>Users</h3>
+  <% if flash.has_key?(:success) %>
+    <p class="alert-success"><strong><%= flash[:success] %> </strong></p>
+  <% end %>
+  <% if flash.has_key?(:error) %>
+    <p class="alert-error"><strong><%= flash[:error] %> </strong></p>
+  <% end %>
+  <div class="bootstrap_buttons pull-left">
+    <button id="new_user" type="button" class="reset btn btn-inverse"><i class="icon-white icon-plus"></i><i class="icon-white icon-user"></i>New User</button>
+  </div>
+  <div class="bootstrap_buttons pull-right">
+    <button type="button" class="reset btn"><i class="icon-refresh"></i> Reset filters</button>
+  </div>
+  </p>
+   <table class="table table-hover sortable">
+     <thead>
+     <tr>
+       <th>Employee ID</th>
+       <th>First Name</th>
+       <th>Last Name</th>
+     </tr>
+     </thead>
+     <tbody>
+     <% @users.each do |user| %>
+         <tr>
+           <td><%= user.employee_id %></td>
+           <td><%= user.first_name %></td>
+           <td><%= user.last_name %></td>
+         </tr>
+     <% end %>
+     </tbody>
+   </table>
+   <div id="create_user_modal" class="modal hide fade" role="dialog">
+     <div class="modal-header">
+       <a class="close" data-dismiss="modal">&times;</a>
+
+       <h3>New User</h3>
+     </div>
+
+     <form action="/user/create" method="POST" class="form-inline">
+       <div class="modal-body">
+         <input type="text" name="user[employee_id]" placeholder="Employee ID" class="input-small">
+         <input type="text" name="user[first_name]" placeholder="First Name" class="input-medium">
+         <input type="text" name="user[last_name]" placeholder="Last Name" class="input-medium">
+       </div>
+       <div class="modal-footer">
+         <input type="submit" value="Create" class="btn btn-primary">
+         <button class="btn" data-dismiss="modal">Close</button>
+       </div>
+     </form>
+  </div>
+  <script type="text/javascript">
+      $("#new_user").click(function() {
+          $('#create_user_modal').modal({
+              show:true,
+              backdrop:'static'
+          });
+      });
+  </script>
+<% end %>

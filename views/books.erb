@@ -1,0 +1,35 @@
+<% content_for :javascript do %> 
+  <link rel="stylesheet" href="/css/tablesorter/theme.bootstrap.css">
+  <script src="/js/jquery.tablesorter.min.js"></script>
+  <script src="/js/jquery.tablesorter.widgets.min.js"></script>
+  <script src="/js/sortable_table.js"></script>
+<% end %>
+<% content_for :content do %>
+  <p><h3>All Books</h3>
+  <div class="bootstrap_buttons pull-right">
+    <button type="button" class="reset btn btn-inverse"><i class="icon-white icon-refresh"></i> Reset filters</button>
+  </div>
+  </p>
+   <table class="table table-hover sortable">
+     <thead>
+     <tr>
+       <th>ISBN</th>
+       <th>Book Title</th>
+       <th>Book Author</th>
+       <th>Copies</th>
+       <th>Available</th>
+     </tr>
+     </thead>
+     <tbody>
+     <% @books.each do |book| %>
+         <tr>
+           <td><%= book.isbn %></td>
+           <td><%= book.title %></td>
+           <td><%= book.author %></td>
+           <td><%= book.book_copies.size %></td>
+           <td><%= book.book_copies.size - @reservations.count{|r| r.book_id == book.id} %></td>
+         </tr>
+     <% end %>
+     </tbody>
+   </table>
+<% end %>

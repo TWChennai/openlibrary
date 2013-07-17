@@ -7,8 +7,11 @@
   <link rel="stylesheet" href="/css/100s.css" />
   <link rel="stylesheet" href="/css/app.css" />
   <script type="text/javascript" src="/js/jquery-1.7.1.min.js"></script>
+  <script type="text/javascript" src="/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="/js/underscore-min.js"></script>
   <script type="text/javascript" src="/js/backbone-min.js"></script>
+  <script type="text/javascript" src="/js/jquery.blockUI.js"></script>
+  <script type="text/javascript" src="/js/app.js"></script>
   <% yield_content :javascript %>
 </head>
 <body class="open-library">
@@ -16,7 +19,19 @@
     <div class="navbar-inner">
       <div class="container">
         <a class="brand" href="/">Open Library</a>
-        <span class="tag-line">10 seconds to checkout a book. It's a lofty but achievable goal</span>
+        <span class="pull-left tag-line">10 seconds to checkout a book. It's a lofty but achievable goal</span>
+				<div class="pull-right nav-collapse">
+					<ul class="nav">
+						<% @menu_items.each do |key, menu_item| %>
+							<% path, display_name = [menu_item["path"], menu_item["display_name"]] %>
+							<li <%= request.path_info == path ? 'class="active"' : '' %>>
+								<a href="<%= path %>">
+									<%= display_name %>
+								</a>
+							</li>
+						<% end %>
+					</ul>
+				</div>
       </div>
     </div>
   </div>

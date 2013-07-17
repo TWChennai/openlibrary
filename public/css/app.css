@@ -15,10 +15,9 @@
   text-align: center;
 }
 
-.page.container .hero-unit.section { height: 240px; padding: 40px 60px;}
+.page.container .hero-unit.section { height: 310px; padding: 40px 60px;}
 
 .page.container .input {
-  opacity: 0;
   padding: 10px 0px;
   text-align: center;
 }
@@ -45,6 +44,8 @@
 .book-info p { padding-top: 10px;}
 
 .page.container .input .barcode {
+  line-height: 50px;
+  text-align: center;
   font-size: 40px;
   height: 40px;
   width: 290px;
@@ -109,3 +110,11 @@
 
 .help .done .title .icon { background: url("../img/tick.png") no-repeat right top; }
 .help .confirmation.active .title .icon { background: url("../img/clock.png") no-repeat right top; }
+
+input[type=number]{
+  width: 30px;
+}
+
+.bootstrap_buttons {
+  margin: 10px 0;
+}

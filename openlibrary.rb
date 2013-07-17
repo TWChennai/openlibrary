@@ -15,8 +15,14 @@ get '/' do
 end
 
 get '/issued-books' do
-  @reservations = Reservation.all({:state => :issued})
-  with_base_layout :issued_books
+  @reservations = Reservation.all({:state => :issued.to_s})
+  with_plain_layout :issued_books
+end
+
+get '/books' do
+  @books = Book.all
+  @reservations = Reservation.all(state: :issued.to_s).to_a
+  with_plain_layout :books
 end
 
 get '/books/:isbn' do
@@ -28,8 +34,25 @@ get '/books/:isbn' do
   without_layout :book_info
 end
 
-get '/user/new' do
-  with_base_layout :new_user
+post '/books/:isbn' do
+  @book = Book.first(isbn: params[:isbn])
+  @book.update(params[:book])
+  without_layout(:donate_book)
+end
+
+get '/users' do
+  @users = User.all(:order => [:id.desc])
+  with_plain_layout :users
+end
+
+post '/user/create' do
+  user = User.create(params[:user].merge(employee_id: params[:user]["employee_id"].to_i))
+  if user.errors.empty?
+    flash[:success] = "Successfully created user !!!"
+  else
+    flash[:error] = user.errors.full_messages.join(", ")
+  end
+  redirect '/users'
 end
 
 get '/barcode/:employee_id/create' do
@@ -38,41 +61,38 @@ get '/barcode/:employee_id/create' do
 end
 
 get '/barcode/success' do
-  with_base_layout :barcode_success
+  with_plain_layout :barcode_success
 end
-
-post '/user/create' do
-  user = User.create(params[:user])
-  if user.errors.empty?
-    flash[:success] = "Successfully created user !!!"
-  else
-    flash[:error] = user.errors.full_messages.join(", ")
-  end
-  redirect '/user/new'
-end
-
 
 get '/donate' do
   with_plain_layout :donate
+end
+
+post '/donate' do
+  @book_found = load_book
+  @book = Book.create_from_google_api(params[:isbn]) unless @book_found
+  without_layout(:donate_book)
+end
+
+post '/add_copies' do
+  @book_found = load_book
+  params[:copies_to_add].to_i.times{ @book.book_copies << BookCopy.create(book_id: @book.id) }
+  without_layout(:donate_book)
 end
 
 get '/users/:employee_id/reserve/:isbn' do
   load_user_and_book
   load_messages
   not_found and return if @user.nil? || @book.nil?
-  criteria = {:user => @user, :book => @book, :state => :issued}
+  criteria = {:user => @user, :book => @book, :state => :issued.to_s}
   @reservation = get_reservation criteria
   @reservation.save
   send("send_#{@reservation.state}_msg")
   without_layout :reservation
 end
 
-def with_base_layout template, options={}
-  @menu_items = YAML::load(File.read(File.expand_path('config/menu.yml','.')))
-  erb template, options.merge(:layout => :'layout/base')
-end
-
 def with_plain_layout template, options={}
+  @menu_items = YAML::load(File.read(File.expand_path('config/menu.yml','.')))
   erb template, options.merge(:layout => :'layout/plain')
 end
 
@@ -107,11 +127,11 @@ def load_user_and_book
 end
 
 def load_user
-  @user = User.first(:employee_id => params[:employee_id])
+  @user = User.first(:employee_id => params[:employee_id].to_i)
 end
 
 def load_book
-  @book = Book.first(:isbn => params[:isbn]) || Book.create_from_google_api(params[:isbn])
+  @book = Book.first(:isbn => params[:isbn])
 end
 
 def load_messages
